@@ -10,8 +10,13 @@ module Registrar
       end
 
       def self.configure(&configuration)
+        block = lambda do |config|
+          configuration.call config
+          config.middleware(::Rails.application.config.middleware)
+        end
+
         @@configuration = lambda do
-          Registrar::Middleware.configure(&configuration)
+          Registrar::Middleware.configure(&block)
         end
       end
     end
