@@ -17,5 +17,4 @@ Gem::Specification.new do |s|
 
   s.add_dependency "rails", "~> 4.2.0"
   s.add_dependency "registrar"
-  s.add_dependency "omniauth-registrar"
 end
