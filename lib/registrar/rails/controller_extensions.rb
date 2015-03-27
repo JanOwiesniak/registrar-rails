@@ -30,6 +30,7 @@ module Registrar
 
           helper_method :authentication_phase?
 
+          helper_method :logout
           helper_method :presentable_authentication
         end
       end
@@ -50,6 +51,10 @@ module Registrar
         def current_profile
           return @current_profile if @current_profile
           try_to_set_current_profile
+        end
+
+        def logout
+          @current_profile = nil
         end
 
         def current_profile?
