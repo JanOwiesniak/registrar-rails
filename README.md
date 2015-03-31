@@ -21,7 +21,7 @@ Add the OmniAuth strategy you want to use to your `Gemfile`
 gem 'omniauth-facebook-access-token'
 ```
 
-Add a file under config/initializers and give it a meaningful name (e.g.
+Add a file under `config/initializers/` and give it a meaningful name (e.g.
 authentication.rb)
 
 ```ruby
