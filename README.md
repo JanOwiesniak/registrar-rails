@@ -1,6 +1,6 @@
 # Registrar::Rails
 
-Registar::Rails is a [Rails Engine](http://guides.rubyonrails.org/engines.html) to simply the integration of [Registar](https://github.com/JanOwiesniak/registrar) into [Rails](https://github.com/rails/rails).
+Registar::Rails is a [Rails Engine](http://guides.rubyonrails.org/engines.html) to simplify the integration of [Registar](https://github.com/JanOwiesniak/registrar) into [Rails](https://github.com/rails/rails).
 
 ## Installation
 
@@ -53,7 +53,7 @@ end
 
 ## Controller Extensions
 
-There are following helper methods avaliable in your controller
+The following helper methods are avaliable to your controllers
 
 * `current_profile` - env['registrar.profile'] stored in the session
 * `logged_in?` - true if current_profile exists
