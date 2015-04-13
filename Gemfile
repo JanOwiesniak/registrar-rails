@@ -2,4 +2,4 @@ source 'https://rubygems.org'
 
 gemspec
 
-gem 'registrar', :path => '../registrar'
+gem 'registrar', '0.0.7.alpha'
