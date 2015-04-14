@@ -49,8 +49,19 @@ module Registrar
         end
 
         def current_profile
-          return @current_profile if @current_profile
-          try_to_set_current_profile
+          if registrar_profile?
+            @current_profile = build_profile(registrar_profile)
+          else
+            @current_profile
+          end
+        end
+
+        def reload_current_profile
+          if registrar_profile?
+            reloaded_profile = Registrar::Middleware::config.handler.call(registrar_profile)
+            request.env['registrar.profile'] = reloaded_profile
+            try_to_store_registrar_profile
+          end
         end
 
         def logout
@@ -61,12 +72,6 @@ module Registrar
           !!current_profile
         end
         alias_method :logged_in?, :current_profile?
-
-        def try_to_set_current_profile
-          if registrar_profile?
-            @current_user = build_profile(registrar_profile)
-          end
-        end
 
         def registrar_profile?
           !!registrar_profile
