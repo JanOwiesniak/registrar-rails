@@ -17,7 +17,7 @@ module Registrar
   module Rails
     module ControllerExtensions
       def self.included(klass)
-        klass.include InstanceMethods
+        klass.send :include, InstanceMethods
         klass.before_action :try_to_store_registrar_profile
 
         klass.class_eval do
