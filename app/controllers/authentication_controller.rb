@@ -8,6 +8,6 @@ class AuthenticationController < ApplicationController
   end
 
   def authenticate
-    render :text => "<pre>#{presentable_authentication.to_yaml}</pre>"
+    redirect_to '/'
   end
 end
