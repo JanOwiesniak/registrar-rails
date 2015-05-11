@@ -1,102 +1,51 @@
+require 'yaml'
+
 module Registrar
-  class Profile < Delegator
-    def initialize(obj)
-      super
-      @delegate_sd_obj = obj
-    end
-
-    def __getobj__
-      @delegate_sd_obj
-    end
-
-    def __setobj__(obj)
-      @delegate_sd_obj = obj
-    end
-  end
-
   module Rails
     module ControllerExtensions
       def self.included(klass)
         klass.send :include, InstanceMethods
-        klass.before_action :try_to_store_registrar_profile
+        klass.before_action :try_to_store_current_profile
 
         klass.class_eval do
           helper_method :current_profile
           helper_method :current_profile?
-          helper_method :logged_in?
-
-          helper_method :registrar_profile
-          helper_method :registrar_profile?
-
-          helper_method :authentication_phase?
-
           helper_method :logout
-          helper_method :presentable_authentication
         end
       end
 
       module InstanceMethods
         REGISTRAR_PROFILE_KEY = 'registrar.profile'
+        CURRENT_PROFILE_KEY = 'current.profile'
 
-        def try_to_store_registrar_profile
-          if registrar_profile = request.env['registrar.profile']
-            store_registrar_profile(registrar_profile)
+        def try_to_store_current_profile
+          if registrar_profile = env[REGISTRAR_PROFILE_KEY]
+            store_current_profile(registrar_profile)
           end
         end
 
-        def store_registrar_profile(registrar_profile)
-          session[REGISTRAR_PROFILE_KEY] = registrar_profile
-        end
-
-        def current_profile
-          if registrar_profile?
-            @current_profile = build_profile(registrar_profile)
-          else
-            @current_profile
-          end
-        end
-
-        def reload_current_profile
-          if registrar_profile?
-            reloaded_profile = Registrar::Middleware::config.handler.call(registrar_profile)
-            request.env['registrar.profile'] = reloaded_profile
-            try_to_store_registrar_profile
-          end
+        def store_current_profile(registrar_profile)
+          session[CURRENT_PROFILE_KEY] = YAML.dump(registrar_profile)
         end
 
         def logout
-          @current_profile = nil
+          session[CURRENT_PROFILE_KEY] = nil
+        end
+
+        def current_profile
+          if session[CURRENT_PROFILE_KEY]
+            YAML.load session[CURRENT_PROFILE_KEY]
+          else
+            nil
+          end
         end
 
         def current_profile?
           !!current_profile
         end
-        alias_method :logged_in?, :current_profile?
-
-        def registrar_profile?
-          !!registrar_profile
-        end
-
-        def registrar_profile
-          session[REGISTRAR_PROFILE_KEY]
-        end
-
-        def build_profile(profile)
-          ::Registrar::Profile.new(profile)
-        end
 
         def authentication_phase?
           params[:controller] == 'authentication' && params[:action] = 'callback'
-        end
-
-        def presentable_authentication
-          {
-            'env.omniauth.auth' => request.env['omniauth.auth'],
-            'env.registrar.auth' => request.env['registrar.auth'],
-            'env.registrar.profile' => request.env['registrar.profile'],
-            'session.registrar_profile' => registrar_profile,
-            'runtime.current_profile' => current_profile
-          }
         end
       end
     end
