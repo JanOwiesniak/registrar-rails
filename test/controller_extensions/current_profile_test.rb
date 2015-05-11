@@ -8,7 +8,6 @@ class CurrentProfileTest < ActionController::TestCase
 
     refute @controller.current_profile
     refute @controller.current_profile?
-    refute @controller.logged_in?
   end
 
 end
