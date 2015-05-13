@@ -9,6 +9,7 @@ module Registrar
 
         klass.class_eval do
           helper_method :current_profile
+          helper_method :reload_current_profile
           helper_method :current_profile?
           helper_method :logout
         end
@@ -30,6 +31,13 @@ module Registrar
 
         def logout
           session[CURRENT_PROFILE_KEY] = nil
+        end
+
+        def reload_current_profile
+          if env[REGISTRAR_PROFILE_KEY]
+            env[REGISTRAR_PROFILE_KEY] = Registrar::Middleware::config.handler.call(env[REGISTRAR_PROFILE_KEY])
+            try_to_store_current_profile
+          end
         end
 
         def current_profile
