@@ -34,8 +34,8 @@ module Registrar
         end
 
         def reload_current_profile
-          if env[REGISTRAR_PROFILE_KEY]
-            env[REGISTRAR_PROFILE_KEY] = Registrar::Middleware::config.handler.call(env[REGISTRAR_PROFILE_KEY])
+          if current_profile
+            env[REGISTRAR_PROFILE_KEY] = Registrar::Middleware::config.handler.call(current_profile)
             try_to_store_current_profile
           end
         end
