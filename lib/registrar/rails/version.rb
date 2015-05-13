@@ -1,5 +1,5 @@
 module Registrar
   module Rails
-    VERSION = "0.0.8.alpha"
+    VERSION = "0.0.9.alpha"
   end
 end
