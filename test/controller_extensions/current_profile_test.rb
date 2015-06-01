@@ -1,13 +1,9 @@
 require 'test_helper'
 
-class CurrentProfileTest < ActionController::TestCase
-  tests SomeController
-
-  test 'no current profile by default' do
-    get :index
-
-    refute @controller.current_profile
-    refute @controller.current_profile?
+class CurrentProfileTest < ActionDispatch::IntegrationTest
+  test 'exposes current profile if registrar.profile is avaliable' do
+    get '/'
+    current_profile_uid = response.body
+    assert_equal '1', current_profile_uid
   end
-
 end

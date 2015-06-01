@@ -1,5 +1,5 @@
 class SomeController < ApplicationController
   def index
-    render :text => 'Hello World!'
+    render :text => current_profile.uid
   end
 end
