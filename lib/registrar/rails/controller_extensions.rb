@@ -7,7 +7,6 @@ module Registrar
 
         klass.class_eval do
           helper_method :current_profile
-          helper_method :reload_current_profile
           helper_method :current_profile?
           helper_method :logout
         end
@@ -25,9 +24,6 @@ module Registrar
 
         def logout
           session[CURRENT_PROFILE_UID] = nil
-        end
-
-        def reload_current_profile
         end
 
         def current_profile
