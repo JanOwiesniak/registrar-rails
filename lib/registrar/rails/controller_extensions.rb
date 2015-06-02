@@ -1,16 +1,5 @@
 module Registrar
   module Rails
-    class CurrentProfile
-      attr_reader :uid
-      def initialize(uid)
-        @uid = uid
-      end
-
-      def profile_uid
-        @uid
-      end
-    end
-
     module ControllerExtensions
       def self.included(klass)
         klass.send :include, InstanceMethods
@@ -54,11 +43,20 @@ module Registrar
 
           if current_profile_uid
             @current_user = Registrar::Middleware::config.handler.call(
-              Registrar::Rails::CurrentProfile.new(current_profile_uid)
+              build_current_profile
             )
           end
 
           @current_user
+        end
+
+        def build_current_profile
+          {
+            "provider" => {
+              "name" => "session",
+              "uid" =>  current_profile_uid
+            }
+          }
         end
 
         def current_profile?
