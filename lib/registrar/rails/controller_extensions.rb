@@ -23,14 +23,6 @@ module Registrar
           end
         end
 
-        def store_current_profile_uid(registrar_profile)
-          session[CURRENT_PROFILE_UID] = registrar_profile.uid
-        end
-
-        def current_profile_uid
-          session[CURRENT_PROFILE_UID]
-        end
-
         def logout
           session[CURRENT_PROFILE_UID] = nil
         end
@@ -39,24 +31,15 @@ module Registrar
         end
 
         def current_profile
-          return @current_user if @current_user
+          return @current_profile if @current_profile
 
-          if current_profile_uid
-            @current_user = Registrar::Middleware::config.handler.call(
+          if current_profile_uid_from_session
+            @current_profile = Registrar::Middleware::config.handler.call(
               build_current_profile
             )
           end
 
-          @current_user
-        end
-
-        def build_current_profile
-          {
-            "provider" => {
-              "name" => "session",
-              "uid" =>  current_profile_uid
-            }
-          }
+          @current_profile
         end
 
         def current_profile?
@@ -65,6 +48,25 @@ module Registrar
 
         def authentication_phase?
           params[:controller] == 'authentication' && params[:action] = 'callback'
+        end
+
+        private
+
+        def store_current_profile_uid(registrar_profile)
+          session[CURRENT_PROFILE_UID] = registrar_profile.uid
+        end
+
+        def current_profile_uid_from_session
+          session[CURRENT_PROFILE_UID]
+        end
+
+        def build_current_profile
+          {
+            "provider" => {
+              "name" => "session",
+              "uid" =>  current_profile_uid_from_session
+            }
+          }
         end
       end
     end
