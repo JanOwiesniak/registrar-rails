@@ -29,9 +29,9 @@ module Registrar
         def current_profile
           return @current_profile if @current_profile
 
-          if current_profile_uid_from_session
+          if uid = current_profile_uid_from_session
             @current_profile = Registrar::Middleware::config.handler.call(
-              build_current_profile
+              build_current_profile(uid)
             )
           end
 
@@ -56,11 +56,11 @@ module Registrar
           session[CURRENT_PROFILE_UID]
         end
 
-        def build_current_profile
+        def build_current_profile(uid)
           {
             "provider" => {
               "name" => "session",
-              "uid" =>  current_profile_uid_from_session
+              "uid" =>  uid
             }
           }
         end
