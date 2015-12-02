@@ -17,6 +17,10 @@ module Registrar
         block = lambda do |config|
           configuration.call config
           config.middleware(::Rails.application.config.middleware)
+
+          OmniAuth.config.on_failure = Proc.new { |env|
+            # noop - lat the application handle the error
+          }
         end
 
         @@configuration = lambda do
