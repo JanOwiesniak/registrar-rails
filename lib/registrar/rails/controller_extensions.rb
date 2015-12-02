@@ -8,7 +8,7 @@ module Registrar
         klass.class_eval do
           helper_method :current_profile
           helper_method :current_profile?
-          helper_method :logout
+          helper_method :sign_out_current_profile
         end
       end
 
@@ -22,19 +22,9 @@ module Registrar
           end
         end
 
-        def logout
-          session[CURRENT_PROFILE_UID] = nil
-        end
-
         def current_profile
           return @current_profile if @current_profile
-
-          if current_profile_uid_from_session
-            @current_profile = Registrar::Middleware::config.handler.call(
-              build_current_profile
-            )
-          end
-
+          @current_profile = handle(profile) if current_profile_uid_from_session
           @current_profile
         end
 
@@ -42,8 +32,8 @@ module Registrar
           !!current_profile
         end
 
-        def authentication_phase?
-          params[:controller] == 'authentication' && params[:action] = 'callback'
+        def sign_out_current_profile
+          session[CURRENT_PROFILE_UID] = nil
         end
 
         private
@@ -56,7 +46,11 @@ module Registrar
           session[CURRENT_PROFILE_UID]
         end
 
-        def build_current_profile
+        def handle(profile)
+          Registrar::Middleware::config.handler.call(profile)
+        end
+
+        def profile
           {
             "provider" => {
               "name" => "session",
