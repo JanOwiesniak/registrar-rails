@@ -18,14 +18,14 @@ module Registrar
 
         def try_to_store_current_profile_uid
           if registrar_profile = env[REGISTRAR_PROFILE_KEY]
-            store_current_profile_uid(registrar_profile)
+            session[CURRENT_PROFILE_UID] = registrar_profile.uid
           end
         end
 
         def current_profile
-          return @current_profile if @current_profile
-          @current_profile = handle(profile) if current_profile_uid_from_session
-          @current_profile
+          if session[CURRENT_PROFILE_UID]
+            @current_profile = fetch_profile_in_session
+          end
         end
 
         def current_profile?
@@ -38,25 +38,15 @@ module Registrar
 
         private
 
-        def store_current_profile_uid(registrar_profile)
-          session[CURRENT_PROFILE_UID] = registrar_profile.uid
-        end
-
-        def current_profile_uid_from_session
-          session[CURRENT_PROFILE_UID]
-        end
-
-        def handle(profile)
-          Registrar::Middleware::config.handler.call(profile)
-        end
-
-        def profile
-          {
-            "provider" => {
-              "name" => "session",
-              "uid" =>  current_profile_uid_from_session
+        def fetch_profile_in_session
+          Registrar::Middleware::config.handler.call(
+            {
+              "provider" => {
+                "name" => "session",
+                "uid" => session[CURRENT_PROFILE_UID]
+              }
             }
-          }
+          )
         end
       end
     end
