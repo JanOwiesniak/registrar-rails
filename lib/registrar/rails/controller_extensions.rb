@@ -23,9 +23,7 @@ module Registrar
         end
 
         def current_profile
-          if session[CURRENT_PROFILE_UID]
-            @current_profile = fetch_profile_in_session
-          end
+          @current_profile ||= fetch_profile_from_session
         end
 
         def current_profile?
@@ -38,15 +36,19 @@ module Registrar
 
         private
 
-        def fetch_profile_in_session
-          Registrar::Middleware::config.handler.call(
-            {
-              "provider" => {
-                "name" => "session",
-                "uid" => session[CURRENT_PROFILE_UID]
-              }
+        def fetch_profile_from_session
+          if session[CURRENT_PROFILE_UID]
+            Registrar::Middleware::config.handler.call(cached_profile)
+          end
+        end
+
+        def cached_profile
+          {
+            "provider" => {
+              "name" => "session",
+              "uid" => session[CURRENT_PROFILE_UID]
             }
-          )
+          }
         end
       end
     end
