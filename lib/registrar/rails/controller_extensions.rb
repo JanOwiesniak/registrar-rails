@@ -32,6 +32,7 @@ module Registrar
 
         def sign_out_current_profile
           session[CURRENT_PROFILE_UID] = nil
+          @current_profile = nil
         end
 
         private
